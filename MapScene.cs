@@ -5,6 +5,8 @@ namespace RealmStudioX.Core
 {
     public sealed class MapScene : IDisposable
     {
+        public event Action? SceneChanged;
+
         private SKPicture? _backgroundCache;
         private bool _backgroundModified = true;
         private SKImage? _backgroundTexture;
@@ -47,6 +49,9 @@ namespace RealmStudioX.Core
             Map = map ?? throw new ArgumentNullException(nameof(map));
             Map.Validate();
             Camera = new Camera2D();
+
+            Camera.ViewChanged += () => SceneChanged?.Invoke();
+
             _fontManager = fontManager ?? throw new ArgumentNullException(nameof(fontManager));
         }
 
