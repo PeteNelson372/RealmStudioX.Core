@@ -2,7 +2,7 @@
 
 namespace RealmStudioX.Core
 {
-    internal class Cmd_ModifyMapPaths(RealmStudioMap map, MapLayer layer) : IUndoableCommand
+    public class Cmd_ModifyMapPaths(RealmStudioMap map, MapLayer layer) : IUndoableCommand
     {
         private readonly RealmStudioMap _map = map;
         private readonly MapLayer _layer = layer;

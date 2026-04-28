@@ -2,7 +2,7 @@
 
 namespace RealmStudioX.Core
 {
-    internal class Cmd_ModifyLabel : IUndoableCommand
+    public class Cmd_ModifyLabel : IUndoableCommand
     {
         private readonly MapLayer _layer;
         private readonly MapLabel _label;
