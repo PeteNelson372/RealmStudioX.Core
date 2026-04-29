@@ -2,43 +2,33 @@
 
 namespace RealmStudioX.Core
 {
-    public class Cmd_UpdateLandformProperties(Landform selectedLandform, LandformShadingSettings newShadingSettings,
-        CoastlineSettings newCoastlineSettings, IAssetProvider assets) : IUndoableCommand
+    public class Cmd_UpdateMapPathProperties(MapPath selectedMapPath, PathRenderStyle renderStyle, IAssetProvider assets) : IUndoableCommand
     {
-        private readonly Landform SelectedLandform = selectedLandform;
-        private readonly LandformShadingSettings NewShadingSettings = newShadingSettings;
-        private readonly CoastlineSettings NewCoastlineSettings = newCoastlineSettings;
+        private readonly MapPath SelectedMapPath = selectedMapPath;
+        private readonly PathRenderStyle NewPathRenderStyle = renderStyle;
 
         private readonly IAssetProvider Assets = assets;
 
-        private LandformShadingSettings? OldShadingSettings;
-        private CoastlineSettings? OldCoastlineSettings;
+        private PathRenderStyle? OldPathRenderStyle;
 
         private bool disposedValue;
 
         public void Execute()
         {
-            OldShadingSettings = SelectedLandform.Shading;
-            OldCoastlineSettings = SelectedLandform.Coastline;
+            OldPathRenderStyle = SelectedMapPath.RenderStyle;
 
-            SelectedLandform.Shading = NewShadingSettings.Clone();
-            SelectedLandform.Coastline = NewCoastlineSettings.Clone();
+            SelectedMapPath.RenderStyle = NewPathRenderStyle.Clone();
 
-            SelectedLandform.ResolveAssets(Assets);
-
-            SelectedLandform.InvalidateRenderCache();
+            SelectedMapPath.ResolveAssets(Assets);
         }
 
         public void Undo()
         {
-            if (OldShadingSettings != null && OldCoastlineSettings != null)
+            if (OldPathRenderStyle != null)
             {
-                SelectedLandform.Shading = OldShadingSettings;
-                SelectedLandform.Coastline = OldCoastlineSettings;
+                SelectedMapPath.RenderStyle = OldPathRenderStyle;
 
-                SelectedLandform.ResolveAssets(Assets);
-
-                SelectedLandform.InvalidateRenderCache();
+                SelectedMapPath.ResolveAssets(Assets);
             }
         }
 
