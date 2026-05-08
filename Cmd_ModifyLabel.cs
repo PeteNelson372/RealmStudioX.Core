@@ -44,6 +44,16 @@ namespace RealmStudioX.Core
             _label.RestoreState(_before);
         }
 
+        public bool HasChange
+        {
+            get
+            {
+                return _hasAfter &&
+                       _after != null &&
+                       !_before.Equals(_after);
+            }
+        }
+
         protected virtual void Dispose(bool disposing)
         {
             if (!disposedValue)
