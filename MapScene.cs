@@ -507,6 +507,24 @@ namespace RealmStudioX.Core
             layer.Draw(canvas, Camera.Viewport);
         }
 
+        private void RenderBoxes(SKCanvas canvas)
+        {
+            MapLayer layer = MapBuilder.GetMapLayerByIndex(Map, MapBuilder.BOXLAYER);
+
+            if (!layer.ShowLayer)
+            {
+                return;
+            }
+
+            for (int i = 0; i < layer.Shapes.Count; i++)
+            {
+                if (layer.Shapes[i] is PlacedMapBox pmb)
+                {
+                    pmb.Render(canvas);
+                }
+            }
+        }
+
         private void RenderLabels(SKCanvas canvas, FontManager fontManager)
         {
             MapLayer layer = MapBuilder.GetMapLayerByIndex(Map, MapBuilder.LABELLAYER);
@@ -580,6 +598,10 @@ namespace RealmStudioX.Core
                     {
                         selectedComponent = ml;
                     }
+                    else if (shape is PlacedMapBox pmb)
+                    {
+                        selectedComponent = pmb;
+                    }
                     else
                     {
                         selectedComponent = layer.Shapes[i];
@@ -596,6 +618,11 @@ namespace RealmStudioX.Core
             else if (selectedComponent is MapLabel label)
             {
                 _transformWidget.Target = label;
+                _transformWidget.Render(canvas, Camera.Zoom);
+            }
+            else if (selectedComponent is PlacedMapBox box)
+            {
+                _transformWidget.Target = box;
                 _transformWidget.Render(canvas, Camera.Zoom);
             }
             else
@@ -662,6 +689,8 @@ namespace RealmStudioX.Core
                 RenderSymbols(canvas);
 
                 RenderUpperMapPaths(canvas);
+
+                RenderBoxes(canvas);
 
                 RenderLabels(canvas, _fontManager!);
 
