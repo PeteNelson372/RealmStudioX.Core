@@ -375,6 +375,29 @@ namespace RealmStudioX.Core
         }
 
         /******************************************************************************************************* 
+        * WINDROSE RENDERING
+        *******************************************************************************************************/
+
+        private void RenderWindroses(SKCanvas canvas)
+        {
+            MapLayer layer = MapBuilder.GetMapLayerByIndex(Map, MapBuilder.WINDROSELAYER);
+
+            if (!layer.ShowLayer)
+            {
+                return;
+            }
+
+            for (int i = 0; i < layer.Shapes.Count; i++)
+            {
+                if (layer.Shapes[i] is MapWindrose mw)
+                {
+                    mw.Render(canvas);
+                }
+            }
+
+        }
+
+        /******************************************************************************************************* 
         * LANDFORM RENDERING
         *******************************************************************************************************/
 
@@ -677,6 +700,8 @@ namespace RealmStudioX.Core
                 RenderOcean(canvas);
 
                 RenderOceanShorelineBlend(canvas);
+
+                RenderWindroses(canvas);
 
                 RenderLandformCoastlines(canvas);
 
