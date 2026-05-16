@@ -398,6 +398,67 @@ namespace RealmStudioX.Core
         }
 
         /******************************************************************************************************* 
+        * GRID RENDERING
+        *******************************************************************************************************/
+
+        private void RenderAboveOceanGridLayer(SKCanvas canvas)
+        {
+            MapLayer layer = MapBuilder.GetMapLayerByIndex(Map, MapBuilder.ABOVEOCEANGRIDLAYER);
+
+            if (!layer.ShowLayer)
+            {
+                return;
+            }
+
+            for (int i = 0; i < layer.Shapes.Count; i++)
+            {
+                if (layer.Shapes[i] is MapGrid mg && mg.GridLayerIndex == MapBuilder.ABOVEOCEANGRIDLAYER)
+                {
+                    mg.Render(canvas);
+                    break; // there should only be one grid
+                }
+            }
+        }
+
+        private void RenderBelowSymbolsGridLayer(SKCanvas canvas)
+        {
+            MapLayer layer = MapBuilder.GetMapLayerByIndex(Map, MapBuilder.BELOWSYMBOLSGRIDLAYER);
+
+            if (!layer.ShowLayer)
+            {
+                return;
+            }
+
+            for (int i = 0; i < layer.Shapes.Count; i++)
+            {
+                if (layer.Shapes[i] is MapGrid mg && mg.GridLayerIndex == MapBuilder.BELOWSYMBOLSGRIDLAYER)
+                {
+                    mg.Render(canvas);
+                    break;
+                }
+            }
+        }
+
+        private void RenderDefaultGridLayer(SKCanvas canvas)
+        {
+            MapLayer layer = MapBuilder.GetMapLayerByIndex(Map, MapBuilder.DEFAULTGRIDLAYER);
+
+            if (!layer.ShowLayer)
+            {
+                return;
+            }
+
+            for (int i = 0; i < layer.Shapes.Count; i++)
+            {
+                if (layer.Shapes[i] is MapGrid mg && mg.GridLayerIndex == MapBuilder.DEFAULTGRIDLAYER)
+                {
+                    mg.Render(canvas);
+                    break;
+                }
+            }
+        }
+
+        /******************************************************************************************************* 
         * LANDFORM RENDERING
         *******************************************************************************************************/
 
@@ -566,6 +627,47 @@ namespace RealmStudioX.Core
             }
         }
 
+        private void RenderFrame(SKCanvas canvas)
+        {
+            MapLayer layer = MapBuilder.GetMapLayerByIndex(Map, MapBuilder.FRAMELAYER);
+
+            if (!layer.ShowLayer)
+            {
+                return;
+            }
+
+            for (int i = 0; i < layer.Shapes.Count; i++)
+            {
+                if (layer.Shapes[i] is PlacedMapFrame pmf)
+                {
+                    // there should only ever be one frame
+                    pmf.Render(canvas);
+                    break;
+                }
+            }
+        }
+
+        private void RenderVignette(SKCanvas canvas)
+        {
+            MapLayer layer = MapBuilder.GetMapLayerByIndex(Map, MapBuilder.VIGNETTELAYER);
+
+            if (!layer.ShowLayer)
+            {
+                return;
+            }
+
+            for (int i = 0; i < layer.Shapes.Count; i++)
+            {
+                if (layer.Shapes[i] is MapVignette vignette)
+                {
+                    // there should only ever be one vignette
+                    vignette.Bounds = WorldBounds;
+                    vignette.Render(canvas);
+                    break;
+                }
+            }
+        }
+
         /******************************************************************************************************* 
         * OTHER SHAPE RENDERING (will be divided as features as added)
         *******************************************************************************************************/
@@ -703,11 +805,15 @@ namespace RealmStudioX.Core
 
                 RenderWindroses(canvas);
 
+                RenderAboveOceanGridLayer(canvas);
+
                 RenderLandformCoastlines(canvas);
 
                 RenderLandforms(canvas);
 
                 RenderWaterSystems(canvas);
+
+                RenderBelowSymbolsGridLayer(canvas);
 
                 RenderLowerMapPaths(canvas);
 
@@ -715,9 +821,15 @@ namespace RealmStudioX.Core
 
                 RenderUpperMapPaths(canvas);
 
+                RenderDefaultGridLayer(canvas);
+
                 RenderBoxes(canvas);
 
                 RenderLabels(canvas, _fontManager!);
+
+                RenderFrame(canvas);
+
+                RenderVignette(canvas);
 
                 foreach (var layer in Layers)
                 {
@@ -737,7 +849,6 @@ namespace RealmStudioX.Core
                 RenderWaterSystemSelection(canvas);
             }
         }
-
 
         /******************************************************************************************************* 
         * HIT TESTING
