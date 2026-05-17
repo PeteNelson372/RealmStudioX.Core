@@ -412,7 +412,7 @@ namespace RealmStudioX.Core
 
             for (int i = 0; i < layer.Shapes.Count; i++)
             {
-                if (layer.Shapes[i] is MapGrid mg && mg.GridLayerIndex == MapBuilder.ABOVEOCEANGRIDLAYER)
+                if (layer.Shapes[i] is MapGrid mg && mg.GridLayerIndex == MapBuilder.ABOVEOCEANGRIDLAYER && mg.GridEnabled)
                 {
                     mg.Render(canvas);
                     break; // there should only be one grid
@@ -431,7 +431,7 @@ namespace RealmStudioX.Core
 
             for (int i = 0; i < layer.Shapes.Count; i++)
             {
-                if (layer.Shapes[i] is MapGrid mg && mg.GridLayerIndex == MapBuilder.BELOWSYMBOLSGRIDLAYER)
+                if (layer.Shapes[i] is MapGrid mg && mg.GridLayerIndex == MapBuilder.BELOWSYMBOLSGRIDLAYER && mg.GridEnabled)
                 {
                     mg.Render(canvas);
                     break;
@@ -450,7 +450,7 @@ namespace RealmStudioX.Core
 
             for (int i = 0; i < layer.Shapes.Count; i++)
             {
-                if (layer.Shapes[i] is MapGrid mg && mg.GridLayerIndex == MapBuilder.DEFAULTGRIDLAYER)
+                if (layer.Shapes[i] is MapGrid mg && mg.GridLayerIndex == MapBuilder.DEFAULTGRIDLAYER && mg.GridEnabled)
                 {
                     mg.Render(canvas);
                     break;
@@ -647,6 +647,24 @@ namespace RealmStudioX.Core
             }
         }
 
+        private void RenderMeasure(SKCanvas canvas)
+        {
+            MapLayer layer = MapBuilder.GetMapLayerByIndex(Map, MapBuilder.MEASURELAYER);
+
+            if (!layer.ShowLayer)
+            {
+                return;
+            }
+
+            for (int i = 0; i < layer.Shapes.Count; i++)
+            {
+                if (layer.Shapes[i] is MapMeasure mm)
+                {
+                    mm.Render(canvas);
+                }
+            }
+        }
+
         private void RenderVignette(SKCanvas canvas)
         {
             MapLayer layer = MapBuilder.GetMapLayerByIndex(Map, MapBuilder.VIGNETTELAYER);
@@ -828,6 +846,8 @@ namespace RealmStudioX.Core
                 RenderLabels(canvas, _fontManager!);
 
                 RenderFrame(canvas);
+
+                RenderMeasure(canvas);
 
                 RenderVignette(canvas);
 
