@@ -627,6 +627,26 @@ namespace RealmStudioX.Core
             }
         }
 
+        private void RenderOverlays(SKCanvas canvas)
+        {
+            MapLayer layer = MapBuilder.GetMapLayerByIndex(Map, MapBuilder.OVERLAYLAYER);
+
+            if (!layer.ShowLayer)
+            {
+                return;
+            }
+
+            for (int i = 0; i < layer.Shapes.Count; i++)
+            {
+                if (layer.Shapes[i] is MapScale ms)
+                {
+                    // there should only ever be one map scale
+                    ms.Render(canvas);
+                    break;
+                }
+            }
+        }
+
         private void RenderFrame(SKCanvas canvas)
         {
             MapLayer layer = MapBuilder.GetMapLayerByIndex(Map, MapBuilder.FRAMELAYER);
@@ -845,6 +865,8 @@ namespace RealmStudioX.Core
 
                 RenderLabels(canvas, _fontManager!);
 
+                RenderOverlays(canvas);
+
                 RenderFrame(canvas);
 
                 RenderMeasure(canvas);
@@ -905,10 +927,18 @@ namespace RealmStudioX.Core
                                 hits.Add(ml);
                             }
                         }
+                        else if (shape is MapScale scale)
+                        {
+                            if (scale.HitTest(worldPoint))
+                            {
+                                hits.Add(scale);
+                            }
+                        }
                         else if (shape.HitTest(worldPoint))
                         {
                             hits.Add(shape);
                         }
+
                     }
                 }
 
