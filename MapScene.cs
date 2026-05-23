@@ -577,6 +577,25 @@ namespace RealmStudioX.Core
             }
         }
 
+        private void RenderRegions(SKCanvas canvas)
+        {
+            using (new SKAutoCanvasRestore(canvas))
+            {
+                MapLayer regionLayer = MapBuilder.GetMapLayerByIndex(Map, MapBuilder.REGIONLAYER);
+
+                if (regionLayer.ShowLayer)
+                {
+                    for (int i = 0; i < regionLayer.Shapes.Count; i++)
+                    {
+                        if (regionLayer.Shapes[i] is MapRegion mr)
+                        {
+                            mr.Render(canvas, null);
+                        }
+                    }
+                }
+            }
+        }
+
         private void RenderSymbols(SKCanvas canvas)
         {
             MapLayer layer = MapBuilder.GetMapLayerByIndex(Map, MapBuilder.SYMBOLLAYER);
@@ -768,7 +787,7 @@ namespace RealmStudioX.Core
                     else
                     {
                         selectedComponent = layer.Shapes[i];
-                        canvas.DrawRect(layer.Shapes[i].Bounds, PaintObjects.Shape2DSelectPaint);
+                        //canvas.DrawRect(layer.Shapes[i].Bounds, PaintObjects.Shape2DSelectPaint);
                     }
                 }
             }
@@ -858,6 +877,8 @@ namespace RealmStudioX.Core
                 RenderSymbols(canvas);
 
                 RenderUpperMapPaths(canvas);
+
+                RenderRegions(canvas);
 
                 RenderDefaultGridLayer(canvas);
 
