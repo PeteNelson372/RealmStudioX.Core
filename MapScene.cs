@@ -1,5 +1,6 @@
 ﻿using RealmStudioShapeRenderingLib;
 using SkiaSharp;
+using System.Reflection.Emit;
 
 namespace RealmStudioX.Core
 {
@@ -393,6 +394,10 @@ namespace RealmStudioX.Core
                 {
                     mw.Render(canvas);
                 }
+                else if (layer.Shapes[i] is IDrawnMapComponent dmc)
+                {
+                    dmc.Render(canvas);
+                }
             }
 
         }
@@ -415,7 +420,10 @@ namespace RealmStudioX.Core
                 if (layer.Shapes[i] is MapGrid mg && mg.GridLayerIndex == MapBuilder.ABOVEOCEANGRIDLAYER && mg.GridEnabled)
                 {
                     mg.Render(canvas);
-                    break; // there should only be one grid
+                }
+                else if (layer.Shapes[i] is IDrawnMapComponent dmc)
+                {
+                    dmc.Render(canvas);
                 }
             }
         }
@@ -434,7 +442,10 @@ namespace RealmStudioX.Core
                 if (layer.Shapes[i] is MapGrid mg && mg.GridLayerIndex == MapBuilder.BELOWSYMBOLSGRIDLAYER && mg.GridEnabled)
                 {
                     mg.Render(canvas);
-                    break;
+                }
+                else if (layer.Shapes[i] is IDrawnMapComponent dmc)
+                {
+                    dmc.Render(canvas);
                 }
             }
         }
@@ -453,7 +464,10 @@ namespace RealmStudioX.Core
                 if (layer.Shapes[i] is MapGrid mg && mg.GridLayerIndex == MapBuilder.DEFAULTGRIDLAYER && mg.GridEnabled)
                 {
                     mg.Render(canvas);
-                    break;
+                }
+                else if (layer.Shapes[i] is IDrawnMapComponent dmc)
+                {
+                    dmc.Render(canvas);
                 }
             }
         }
@@ -485,6 +499,10 @@ namespace RealmStudioX.Core
                         lf.RenderCoastlineFinal(canvas);
                     }
                 }
+                else if (layer.Shapes[i] is IDrawnMapComponent dmc)
+                {
+                    dmc.Render(canvas);
+                }
             }
         }
 
@@ -510,6 +528,10 @@ namespace RealmStudioX.Core
                         lf.RenderInteriorFinal(canvas);
                     }
                 }
+                else if (layer.Shapes[i] is IDrawnMapComponent dmc)
+                {
+                    dmc.Render(canvas);
+                }
             }
 
         }
@@ -527,6 +549,26 @@ namespace RealmStudioX.Core
                 foreach (var waterSystem in Map.WaterSystems)
                 {
                     waterSystem.Render(canvas);
+                }
+
+                MapLayer waterlayer = MapBuilder.GetMapLayerByIndex(Map, MapBuilder.WATERLAYER);
+
+                for (int i = 0; i < waterlayer.Shapes.Count; i++)
+                {
+                    if (waterlayer.Shapes[i] is IDrawnMapComponent dmc)
+                    {
+                        dmc.Render(canvas);
+                    }
+                }
+
+                MapLayer waterdrawinglayer = MapBuilder.GetMapLayerByIndex(Map, MapBuilder.WATERDRAWINGLAYER);
+
+                for (int i = 0; i < waterdrawinglayer.Shapes.Count; i++)
+                {
+                    if (waterdrawinglayer.Shapes[i] is IDrawnMapComponent dmc)
+                    {
+                        dmc.Render(canvas);
+                    }
                 }
             }
         }
@@ -551,6 +593,10 @@ namespace RealmStudioX.Core
                         {
                             mp.Render(canvas, null);
                         }
+                        else if (pathLowerLayer.Shapes[i] is IDrawnMapComponent dmc)
+                        {
+                            dmc.Render(canvas);
+                        }
                     }
                 }
             }
@@ -572,6 +618,10 @@ namespace RealmStudioX.Core
                         {
                             mp.Render(canvas, null);
                         }
+                        else if (pathUpperLayer.Shapes[i] is IDrawnMapComponent dmc)
+                        {
+                            dmc.Render(canvas);
+                        }
                     }
                 }
             }
@@ -591,6 +641,10 @@ namespace RealmStudioX.Core
                         {
                             mr.Render(canvas, null);
                         }
+                        else if (regionLayer.Shapes[i] is IDrawnMapComponent dmc)
+                        {
+                            dmc.Render(canvas);
+                        }
                     }
                 }
             }
@@ -608,6 +662,14 @@ namespace RealmStudioX.Core
             layer.ProcessPlacementQueue();
 
             layer.Draw(canvas, Camera.Viewport);
+
+            for (int i = 0; i < layer.Shapes.Count; i++)
+            {
+                if (layer.Shapes[i] is IDrawnMapComponent dmc)
+                {
+                    dmc.Render(canvas);
+                }
+            }
         }
 
         private void RenderBoxes(SKCanvas canvas)
@@ -624,6 +686,10 @@ namespace RealmStudioX.Core
                 if (layer.Shapes[i] is PlacedMapBox pmb)
                 {
                     pmb.Render(canvas);
+                }
+                else if (layer.Shapes[i] is IDrawnMapComponent dmc)
+                {
+                    dmc.Render(canvas);
                 }
             }
         }
@@ -643,6 +709,10 @@ namespace RealmStudioX.Core
                 {
                     ml.Render(canvas, fontManager);
                 }
+                else if (layer.Shapes[i] is IDrawnMapComponent dmc)
+                {
+                    dmc.Render(canvas);
+                }
             }
         }
 
@@ -661,7 +731,10 @@ namespace RealmStudioX.Core
                 {
                     // there should only ever be one map scale
                     ms.Render(canvas);
-                    break;
+                }
+                else if (layer.Shapes[i] is IDrawnMapComponent dmc)
+                {
+                    dmc.Render(canvas);
                 }
             }
         }
@@ -681,7 +754,10 @@ namespace RealmStudioX.Core
                 {
                     // there should only ever be one frame
                     pmf.Render(canvas);
-                    break;
+                }
+                else if (layer.Shapes[i] is IDrawnMapComponent dmc)
+                {
+                    dmc.Render(canvas);
                 }
             }
         }
@@ -700,6 +776,28 @@ namespace RealmStudioX.Core
                 if (layer.Shapes[i] is MapMeasure mm)
                 {
                     mm.Render(canvas);
+                }
+                else if (layer.Shapes[i] is IDrawnMapComponent dmc)
+                {
+                    dmc.Render(canvas);
+                }
+            }
+        }
+
+        private void RenderDrawingLayer(SKCanvas canvas)
+        {
+            MapLayer layer = MapBuilder.GetMapLayerByIndex(Map, MapBuilder.DRAWINGLAYER);
+
+            if (!layer.ShowLayer)
+            {
+                return;
+            }
+
+            for (int i = 0; i < layer.Shapes.Count; i++)
+            {
+                if (layer.Shapes[i] is IDrawnMapComponent dmc)
+                {
+                    dmc.Render(canvas);
                 }
             }
         }
@@ -720,7 +818,10 @@ namespace RealmStudioX.Core
                     // there should only ever be one vignette
                     vignette.Bounds = WorldBounds;
                     vignette.Render(canvas);
-                    break;
+                }
+                else if (layer.Shapes[i] is IDrawnMapComponent dmc)
+                {
+                    dmc.Render(canvas);
                 }
             }
         }
@@ -891,6 +992,8 @@ namespace RealmStudioX.Core
                 RenderFrame(canvas);
 
                 RenderMeasure(canvas);
+
+                RenderDrawingLayer(canvas);
 
                 RenderVignette(canvas);
 
