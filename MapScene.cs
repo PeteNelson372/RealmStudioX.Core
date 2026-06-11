@@ -56,12 +56,7 @@ namespace RealmStudioX.Core
             _fontManager = fontManager ?? throw new ArgumentNullException(nameof(fontManager));
         }
 
-        public SKRect WorldBounds =>
-            new(
-                0, 0,
-                Map.MapWidth,
-                Map.MapHeight
-            );
+        public SKRect WorldBounds => new(0, 0, Map.MapWidth, Map.MapHeight);
 
         /******************************************************************************************************* 
         * LANDFORM CLIP PATH CALCULATION
@@ -120,6 +115,10 @@ namespace RealmStudioX.Core
             {
                 canvas.DrawPicture(_backgroundCache);
             }
+
+            // process and render DrawnMapComponents
+            layer.ProcessPlacementQueue();
+            layer.Draw(canvas, Camera.Viewport);
         }
 
         public void MarkBackgroundModified()
@@ -205,6 +204,10 @@ namespace RealmStudioX.Core
             {
                 canvas.DrawPicture(_oceanTextureCache);
             }
+
+            // process and render DrawnMapComponents
+            layer.ProcessPlacementQueue();
+            layer.Draw(canvas, Camera.Viewport);
         }
 
         public void MarkOceanTextureModified()
@@ -394,12 +397,11 @@ namespace RealmStudioX.Core
                 {
                     mw.Render(canvas);
                 }
-                else if (layer.Shapes[i] is IDrawnMapComponent dmc)
-                {
-                    dmc.Render(canvas);
-                }
             }
 
+            // process and render DrawnMapComponents
+            layer.ProcessPlacementQueue();
+            layer.Draw(canvas, Camera.Viewport);
         }
 
         /******************************************************************************************************* 
@@ -421,11 +423,11 @@ namespace RealmStudioX.Core
                 {
                     mg.Render(canvas);
                 }
-                else if (layer.Shapes[i] is IDrawnMapComponent dmc)
-                {
-                    dmc.Render(canvas);
-                }
             }
+
+            // process and render DrawnMapComponents
+            layer.ProcessPlacementQueue();
+            layer.Draw(canvas, Camera.Viewport);
         }
 
         private void RenderBelowSymbolsGridLayer(SKCanvas canvas)
@@ -443,11 +445,11 @@ namespace RealmStudioX.Core
                 {
                     mg.Render(canvas);
                 }
-                else if (layer.Shapes[i] is IDrawnMapComponent dmc)
-                {
-                    dmc.Render(canvas);
-                }
             }
+
+            // process and render DrawnMapComponents
+            layer.ProcessPlacementQueue();
+            layer.Draw(canvas, Camera.Viewport);
         }
 
         private void RenderDefaultGridLayer(SKCanvas canvas)
@@ -465,11 +467,11 @@ namespace RealmStudioX.Core
                 {
                     mg.Render(canvas);
                 }
-                else if (layer.Shapes[i] is IDrawnMapComponent dmc)
-                {
-                    dmc.Render(canvas);
-                }
             }
+
+            // process and render DrawnMapComponents
+            layer.ProcessPlacementQueue();
+            layer.Draw(canvas, Camera.Viewport);
         }
 
         /******************************************************************************************************* 
@@ -499,11 +501,11 @@ namespace RealmStudioX.Core
                         lf.RenderCoastlineFinal(canvas);
                     }
                 }
-                else if (layer.Shapes[i] is IDrawnMapComponent dmc)
-                {
-                    dmc.Render(canvas);
-                }
             }
+
+            // process and render DrawnMapComponents
+            layer.ProcessPlacementQueue();
+            layer.Draw(canvas, Camera.Viewport);
         }
 
         private void RenderLandforms(SKCanvas canvas)
@@ -528,12 +530,11 @@ namespace RealmStudioX.Core
                         lf.RenderInteriorFinal(canvas);
                     }
                 }
-                else if (layer.Shapes[i] is IDrawnMapComponent dmc)
-                {
-                    dmc.Render(canvas);
-                }
             }
 
+            // process and render DrawnMapComponents
+            layer.ProcessPlacementQueue();
+            layer.Draw(canvas, Camera.Viewport);
         }
 
         /******************************************************************************************************* 
@@ -542,6 +543,12 @@ namespace RealmStudioX.Core
 
         private void RenderWaterSystems(SKCanvas canvas)
         {
+            MapLayer waterlayer = MapBuilder.GetMapLayerByIndex(Map, MapBuilder.WATERLAYER);
+            if (!waterlayer.ShowLayer)
+            {
+                return;
+            }
+
             using (new SKAutoCanvasRestore(canvas))
             {
                 canvas.ClipPath(GetLandClipPath());
@@ -551,25 +558,15 @@ namespace RealmStudioX.Core
                     waterSystem.Render(canvas);
                 }
 
-                MapLayer waterlayer = MapBuilder.GetMapLayerByIndex(Map, MapBuilder.WATERLAYER);
-
-                for (int i = 0; i < waterlayer.Shapes.Count; i++)
-                {
-                    if (waterlayer.Shapes[i] is IDrawnMapComponent dmc)
-                    {
-                        dmc.Render(canvas);
-                    }
-                }
+                // process and render DrawnMapComponents
+                waterlayer.ProcessPlacementQueue();
+                waterlayer.Draw(canvas, Camera.Viewport);
 
                 MapLayer waterdrawinglayer = MapBuilder.GetMapLayerByIndex(Map, MapBuilder.WATERDRAWINGLAYER);
 
-                for (int i = 0; i < waterdrawinglayer.Shapes.Count; i++)
-                {
-                    if (waterdrawinglayer.Shapes[i] is IDrawnMapComponent dmc)
-                    {
-                        dmc.Render(canvas);
-                    }
-                }
+                // process and render DrawnMapComponents
+                waterdrawinglayer.ProcessPlacementQueue();
+                waterdrawinglayer.Draw(canvas, Camera.Viewport);
             }
         }
 
@@ -593,11 +590,10 @@ namespace RealmStudioX.Core
                         {
                             mp.Render(canvas, null);
                         }
-                        else if (pathLowerLayer.Shapes[i] is IDrawnMapComponent dmc)
-                        {
-                            dmc.Render(canvas);
-                        }
                     }
+
+                    pathLowerLayer.ProcessPlacementQueue();
+                    pathLowerLayer.Draw(canvas, Camera.Viewport);
                 }
             }
         }
@@ -618,11 +614,10 @@ namespace RealmStudioX.Core
                         {
                             mp.Render(canvas, null);
                         }
-                        else if (pathUpperLayer.Shapes[i] is IDrawnMapComponent dmc)
-                        {
-                            dmc.Render(canvas);
-                        }
                     }
+
+                    pathUpperLayer.ProcessPlacementQueue();
+                    pathUpperLayer.Draw(canvas, Camera.Viewport);
                 }
             }
         }
@@ -641,11 +636,10 @@ namespace RealmStudioX.Core
                         {
                             mr.Render(canvas, null);
                         }
-                        else if (regionLayer.Shapes[i] is IDrawnMapComponent dmc)
-                        {
-                            dmc.Render(canvas);
-                        }
                     }
+
+                    regionLayer.ProcessPlacementQueue();
+                    regionLayer.Draw(canvas, Camera.Viewport);
                 }
             }
         }
@@ -659,17 +653,10 @@ namespace RealmStudioX.Core
                 return;
             }
 
+            // symbols are added to tiles and the spatial index,
+            // so they are rendered via layer.Draw
             layer.ProcessPlacementQueue();
-
             layer.Draw(canvas, Camera.Viewport);
-
-            for (int i = 0; i < layer.Shapes.Count; i++)
-            {
-                if (layer.Shapes[i] is IDrawnMapComponent dmc)
-                {
-                    dmc.Render(canvas);
-                }
-            }
         }
 
         private void RenderBoxes(SKCanvas canvas)
@@ -687,11 +674,10 @@ namespace RealmStudioX.Core
                 {
                     pmb.Render(canvas);
                 }
-                else if (layer.Shapes[i] is IDrawnMapComponent dmc)
-                {
-                    dmc.Render(canvas);
-                }
             }
+
+            layer.ProcessPlacementQueue();
+            layer.Draw(canvas, Camera.Viewport);
         }
 
         private void RenderLabels(SKCanvas canvas, FontManager fontManager)
@@ -709,11 +695,10 @@ namespace RealmStudioX.Core
                 {
                     ml.Render(canvas, fontManager);
                 }
-                else if (layer.Shapes[i] is IDrawnMapComponent dmc)
-                {
-                    dmc.Render(canvas);
-                }
             }
+
+            layer.ProcessPlacementQueue();
+            layer.Draw(canvas, Camera.Viewport);
         }
 
         private void RenderOverlays(SKCanvas canvas)
@@ -732,11 +717,10 @@ namespace RealmStudioX.Core
                     // there should only ever be one map scale
                     ms.Render(canvas);
                 }
-                else if (layer.Shapes[i] is IDrawnMapComponent dmc)
-                {
-                    dmc.Render(canvas);
-                }
             }
+
+            layer.ProcessPlacementQueue();
+            layer.Draw(canvas, Camera.Viewport);
         }
 
         private void RenderFrame(SKCanvas canvas)
@@ -755,11 +739,10 @@ namespace RealmStudioX.Core
                     // there should only ever be one frame
                     pmf.Render(canvas);
                 }
-                else if (layer.Shapes[i] is IDrawnMapComponent dmc)
-                {
-                    dmc.Render(canvas);
-                }
             }
+
+            layer.ProcessPlacementQueue();
+            layer.Draw(canvas, Camera.Viewport);
         }
 
         private void RenderMeasure(SKCanvas canvas)
@@ -777,11 +760,10 @@ namespace RealmStudioX.Core
                 {
                     mm.Render(canvas);
                 }
-                else if (layer.Shapes[i] is IDrawnMapComponent dmc)
-                {
-                    dmc.Render(canvas);
-                }
             }
+
+            layer.ProcessPlacementQueue();
+            layer.Draw(canvas, Camera.Viewport);
         }
 
         private void RenderDrawingLayer(SKCanvas canvas)
@@ -793,13 +775,10 @@ namespace RealmStudioX.Core
                 return;
             }
 
-            for (int i = 0; i < layer.Shapes.Count; i++)
-            {
-                if (layer.Shapes[i] is IDrawnMapComponent dmc)
-                {
-                    dmc.Render(canvas);
-                }
-            }
+            // DrawnMapComponents are added to the layer tiles
+            // so they are rendered via layer.Draw
+            layer.ProcessPlacementQueue();
+            layer.Draw(canvas, Camera.Viewport);
         }
 
         private void RenderVignette(SKCanvas canvas)
@@ -819,11 +798,10 @@ namespace RealmStudioX.Core
                     vignette.Bounds = WorldBounds;
                     vignette.Render(canvas);
                 }
-                else if (layer.Shapes[i] is IDrawnMapComponent dmc)
-                {
-                    dmc.Render(canvas);
-                }
             }
+
+            layer.ProcessPlacementQueue();
+            layer.Draw(canvas, Camera.Viewport);
         }
 
         /******************************************************************************************************* 
@@ -1004,15 +982,63 @@ namespace RealmStudioX.Core
                         continue;
                     }
 
-                    // this is commented out, because it can lead to
-                    // shapes being rendered by the dedicated method for the shape
-                    // and also by the generic Shape2D rendering, which can lead to confusion
-                    //RenderShapes(layer, canvas);
-
                     RenderLayerShapeSelection(layer, canvas);
                 }
 
                 RenderWaterSystemSelection(canvas);
+            }
+        }
+
+        public void RenderForExport(SKCanvas canvas)
+        {
+            ArgumentNullException.ThrowIfNull(canvas);
+            ArgumentNullException.ThrowIfNull(RenderContext);
+
+            canvas.Clear(SKColors.White);
+
+            using (RenderContextScope.Begin(RenderContext))
+            {
+                RenderBackground(canvas);
+
+                RenderOcean(canvas);
+
+                RenderOceanShorelineBlend(canvas);
+
+                RenderWindroses(canvas);
+
+                RenderAboveOceanGridLayer(canvas);
+
+                RenderLandformCoastlines(canvas);
+
+                RenderLandforms(canvas);
+
+                RenderWaterSystems(canvas);
+
+                RenderBelowSymbolsGridLayer(canvas);
+
+                RenderLowerMapPaths(canvas);
+
+                RenderSymbols(canvas);
+
+                RenderUpperMapPaths(canvas);
+
+                RenderRegions(canvas);
+
+                RenderDefaultGridLayer(canvas);
+
+                RenderBoxes(canvas);
+
+                RenderLabels(canvas, _fontManager!);
+
+                RenderOverlays(canvas);
+
+                RenderFrame(canvas);
+
+                RenderMeasure(canvas);
+
+                RenderDrawingLayer(canvas);
+
+                RenderVignette(canvas);
             }
         }
 
