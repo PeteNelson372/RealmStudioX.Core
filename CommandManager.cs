@@ -27,7 +27,7 @@ namespace RealmStudioX.Core
 {
     public sealed class CommandManager
     {
-        public event Action? HistoryChanged;
+        public event Action? CommandHistoryChanged;
 
         private readonly Stack<IUndoableCommand> _undo = new();
         private readonly Stack<IUndoableCommand> _redo = new();
@@ -39,7 +39,7 @@ namespace RealmStudioX.Core
             
             ClearRedo();
 
-            HistoryChanged?.Invoke();
+            CommandHistoryChanged?.Invoke();
         }
 
         public void Undo()
@@ -49,7 +49,7 @@ namespace RealmStudioX.Core
                 cmd.Undo();
                 _redo.Push(cmd);
 
-                HistoryChanged?.Invoke();
+                CommandHistoryChanged?.Invoke();
             }
         }
 
@@ -60,7 +60,7 @@ namespace RealmStudioX.Core
                 cmd.Execute();
                 _undo.Push(cmd);
 
-                HistoryChanged?.Invoke();
+                CommandHistoryChanged?.Invoke();
             }
         }
 
@@ -70,12 +70,18 @@ namespace RealmStudioX.Core
             {
                 _redo.Pop().Dispose();
             }
+
+            CommandHistoryChanged?.Invoke();
         }
 
         public void ClearAll()
         {
             while (_undo.Count > 0) _undo.Pop().Dispose();
             while (_redo.Count > 0) _redo.Pop().Dispose();
+
+            CommandHistoryChanged?.Invoke();
         }
+
+        public int UndoCount { get { return _undo.Count; } }
     }
 }

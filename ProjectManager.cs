@@ -8,6 +8,8 @@ namespace RealmStudioX.Core
 
         public event EventHandler? ProjectChanged;
 
+        public CommandManager ProjectCommands { get; private set; } = new CommandManager();
+
         public void OpenProject(RealmStudioProject project)
         {
             CurrentProject = project;
