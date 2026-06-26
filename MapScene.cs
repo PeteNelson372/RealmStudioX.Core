@@ -1,6 +1,5 @@
 ﻿using RealmStudioShapeRenderingLib;
 using SkiaSharp;
-using System.Reflection.Emit;
 
 namespace RealmStudioX.Core
 {
@@ -828,7 +827,7 @@ namespace RealmStudioX.Core
         {
             MapComponent2D? selectedComponent = null;
 
-            // PASS 4 — shape selection
+            // shape selection
             for (int i = 0; i < layer.Shapes.Count; i++)
             {
                 if (layer.Shapes[i].IsSelected)
@@ -853,7 +852,14 @@ namespace RealmStudioX.Core
                     }
                     else if (shape is MapSymbol ms)
                     {
-                        selectedComponent = ms;
+                        if (RenderContext.State.CurrentDrawingMode == MapDrawingMode.ShapeSelect)
+                        {
+                            selectedComponent = ms;
+                        }
+                        else
+                        {
+                            canvas.DrawRect(ms.Bounds, PaintObjects.MapSymbolSelectPaint);
+                        }
                     }
                     else if (shape is MapLabel ml)
                     {
@@ -863,10 +869,10 @@ namespace RealmStudioX.Core
                     {
                         selectedComponent = pmb;
                     }
-                    else
+                    else if (shape is IDrawnMapComponent dmc)
                     {
-                        selectedComponent = layer.Shapes[i];
-                        //canvas.DrawRect(layer.Shapes[i].Bounds, PaintObjects.Shape2DSelectPaint);
+                        selectedComponent = (MapComponent2D)dmc;
+                        canvas.DrawRect(((MapComponent2D)dmc).Bounds, PaintObjects.Shape2DSelectPaint);
                     }
                 }
             }
@@ -1042,75 +1048,6 @@ namespace RealmStudioX.Core
             }
         }
 
-        /******************************************************************************************************* 
-        * HIT TESTING
-        *******************************************************************************************************/
-
-        public List<ISelectable> HitTestAll(SKPoint worldPoint)
-        {
-            var hits = new List<ISelectable>();
-
-            using (RenderContextScope.Begin(RenderContext))
-            {
-                foreach (var layer in Layers)
-                {
-                    if (!layer.ShowLayer)
-                    {
-                        continue;
-                    }
-
-                    for (int i = layer.Shapes.Count - 1; i >= 0; i--)
-                    {
-                        var shape = layer.Shapes[i];
-
-                        if (shape is MapSymbol ms)
-                        {
-                            if (ms.HitTest(worldPoint))
-                            {
-                                hits.Add(ms);
-                            }
-                        }
-                        else if (shape is MapLabel ml)
-                        {
-                            if (ml.HitTest(worldPoint))
-                            {
-                                hits.Add(ml);
-                            }
-                        }
-                        else if (shape is MapScale scale)
-                        {
-                            if (scale.HitTest(worldPoint))
-                            {
-                                hits.Add(scale);
-                            }
-                        }
-                        else if (shape.HitTest(worldPoint))
-                        {
-                            hits.Add(shape);
-                        }
-
-                    }
-                }
-
-                foreach (var waterSystem in Map.WaterSystems)
-                {
-                    if (waterSystem.HitTest(worldPoint))
-                    {
-                        hits.Add(waterSystem);
-                    }
-
-                    foreach (var waterBody in waterSystem.WaterBodies)
-                    {
-                        if (waterBody.HitTest(worldPoint))
-                        {
-                            hits.Add(waterBody);
-                        }
-                    }
-                }
-            }
-
-            return hits;
-        }
 
         private void Dispose(bool disposing)
         {

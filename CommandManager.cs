@@ -27,6 +27,8 @@ namespace RealmStudioX.Core
 {
     public sealed class CommandManager
     {
+        public string Id { get; private set; } = Guid.NewGuid().ToString();
+
         public event Action? CommandHistoryChanged;
 
         private readonly Stack<IUndoableCommand> _undo = new();
