@@ -207,6 +207,14 @@ namespace RealmStudioX.Core
             // process and render DrawnMapComponents
             layer.ProcessPlacementQueue();
             layer.Draw(canvas, Camera.Viewport);
+
+            // render the ocean drawing layer
+            MapLayer oceanDrawinglayer = MapBuilder.GetMapLayerByIndex(Map, MapBuilder.OCEANDRAWINGLAYER);
+
+            // DrawnMapComponents (including PaintedLines) are added to the layer tiles
+            // so they are rendered via layer.Draw
+            oceanDrawinglayer.ProcessPlacementQueue();
+            oceanDrawinglayer.Draw(canvas, Camera.Viewport);
         }
 
         public void MarkOceanTextureModified()
