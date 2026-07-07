@@ -2,9 +2,10 @@
 {
     using RealmStudioShapeRenderingLib;
 
-    public class Cmd_ModifyWaterBodies(RealmStudioMap map) : IUndoableCommand
+    public class Cmd_ModifyWaterBodies(MapScene scene) : IUndoableCommand
     {
-        private readonly RealmStudioMap _map = map;
+        private readonly MapScene _scene = scene;
+        private readonly RealmStudioMap _map = scene.Map;
 
         private readonly HashSet<WaterBody> _addedBodies = [];
         private readonly HashSet<WaterBody> _removedBodies = [];
@@ -188,9 +189,12 @@
 
             foreach (var sys in systems)
             {
-                //sys.RebuildMergedGeometry();
+                sys.GeometryModified();
                 sys.InvalidateRenderCache();
             }
+
+            _scene.MarkWaterSystemClipPathModified();
+            _scene.GetWaterSystemClipPath();
         }
 
         // -------------------------------------------------

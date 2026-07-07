@@ -61,8 +61,8 @@ namespace RealmStudioX.Core
         * LANDFORM CLIP PATH CALCULATION
         *******************************************************************************************************/
 
-        private SKPath? _landClipCache;
-        private bool _landClipPathModified;
+        private SKPath? _landClipCache = null;
+        private bool _landClipPathModified = true;
 
         public SKPath GetLandClipPath()
         {
@@ -80,6 +80,7 @@ namespace RealmStudioX.Core
 
             foreach (var lf in landLayer.Shapes.OfType<Landform>())
             {
+                lf.FinalizeShapeGeometry(Map);
                 _landClipCache.AddPath(lf.HitPath);
             }
 
@@ -91,6 +92,45 @@ namespace RealmStudioX.Core
         public void MarkLandClipPathModified()
         {
             _landClipPathModified = true; 
+        }
+
+        /******************************************************************************************************* 
+        * WATER SYSTEM CLIP PATH CALCULATION
+        *******************************************************************************************************/
+
+        private SKPath? _waterSystemClipCache = null;
+        private bool _waterSystemClipPathModified = true;
+
+        public SKPath GetWaterSystemClipPath()
+        {
+            if (!_waterSystemClipPathModified && _waterSystemClipCache != null)
+            {
+                return _waterSystemClipCache;
+            }
+
+            _waterSystemClipCache?.Dispose();
+            _waterSystemClipCache = null;
+
+            _waterSystemClipCache = new SKPath();
+
+            foreach (var ws in Map.WaterSystems)
+            {
+                foreach (var wb in ws.WaterBodies)
+                {
+                    _waterSystemClipCache.AddPath(wb.HitPath);
+                }
+
+                _waterSystemClipCache.AddPath(ws.MergedGeometry);
+            }
+
+            _waterSystemClipPathModified = false;
+
+            return _waterSystemClipCache;
+        }
+
+        public void MarkWaterSystemClipPathModified()
+        {
+            _waterSystemClipPathModified = true;
         }
 
         /******************************************************************************************************* 
@@ -542,6 +582,18 @@ namespace RealmStudioX.Core
             // process and render DrawnMapComponents
             layer.ProcessPlacementQueue();
             layer.Draw(canvas, Camera.Viewport);
+
+            // render the land drawing layer
+            MapLayer landDrawinglayer = MapBuilder.GetMapLayerByIndex(Map, MapBuilder.LANDDRAWINGLAYER);
+
+            // DrawnMapComponents (including PaintedLines) are added to the layer tiles
+            // so they are rendered via layer.Draw
+            landDrawinglayer.ProcessPlacementQueue();
+
+            SKPath landClipPath = this.GetLandClipPath();
+            SKPath waterClipPath = this.GetWaterSystemClipPath();
+
+            landDrawinglayer.Draw(canvas, Camera.Viewport, landClipPath, waterClipPath);
         }
 
         /******************************************************************************************************* 
@@ -550,6 +602,8 @@ namespace RealmStudioX.Core
 
         private void RenderWaterSystems(SKCanvas canvas)
         {
+            SKPath landClipPath = this.GetLandClipPath();
+
             MapLayer waterlayer = MapBuilder.GetMapLayerByIndex(Map, MapBuilder.WATERLAYER);
             if (!waterlayer.ShowLayer)
             {
@@ -558,7 +612,7 @@ namespace RealmStudioX.Core
 
             using (new SKAutoCanvasRestore(canvas))
             {
-                canvas.ClipPath(GetLandClipPath());
+                canvas.ClipPath(landClipPath);
 
                 foreach (var waterSystem in Map.WaterSystems)
                 {
@@ -572,8 +626,11 @@ namespace RealmStudioX.Core
                 MapLayer waterdrawinglayer = MapBuilder.GetMapLayerByIndex(Map, MapBuilder.WATERDRAWINGLAYER);
 
                 // process and render DrawnMapComponents
+
+                SKPath waterClipPath = this.GetWaterSystemClipPath();
+
                 waterdrawinglayer.ProcessPlacementQueue();
-                waterdrawinglayer.Draw(canvas, Camera.Viewport);
+                waterdrawinglayer.Draw(canvas, Camera.Viewport, landClipPath, waterClipPath);
             }
         }
 
