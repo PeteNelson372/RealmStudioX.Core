@@ -917,9 +917,12 @@ namespace RealmStudioX.Core
                     }
                     else if (shape is MapSymbol ms)
                     {
+                        ms.IsTransformTarget = false;
+
                         if (RenderContext.State.CurrentDrawingMode == MapDrawingMode.ShapeSelect)
                         {
                             selectedComponent = ms;
+                            canvas.DrawRect(ms.Bounds, PaintObjects.MapSymbolSelectPaint);
                         }
                         else
                         {
@@ -928,11 +931,22 @@ namespace RealmStudioX.Core
                     }
                     else if (shape is MapLabel ml)
                     {
-                        selectedComponent = ml;
+                        ml.IsTransformTarget = false;
+
+                        if (RenderContext.State.CurrentDrawingMode == MapDrawingMode.ShapeSelect)
+                        {
+                            selectedComponent = ml;
+                            canvas.DrawRect(ml.Bounds, PaintObjects.LabelSelectPaint);
+                        }
+                        else
+                        {
+                            canvas.DrawRect(ml.Bounds, PaintObjects.LabelSelectPaint);
+                        }
                     }
                     else if (shape is PlacedMapBox pmb)
                     {
                         selectedComponent = pmb;
+                        canvas.DrawRect(pmb.Bounds, PaintObjects.BoxSelectPaint);
                     }
                     else if (shape is IDrawnMapComponent dmc)
                     {
@@ -944,11 +958,13 @@ namespace RealmStudioX.Core
 
             if (selectedComponent is MapSymbol symbol)
             {
+                symbol.IsTransformTarget = true;
                 _transformWidget.Target = symbol;
                 _transformWidget.Render(canvas, Camera.Zoom);
             }
             else if (selectedComponent is MapLabel label)
             {
+                label.IsTransformTarget = true;
                 _transformWidget.Target = label;
                 _transformWidget.Render(canvas, Camera.Zoom);
             }
