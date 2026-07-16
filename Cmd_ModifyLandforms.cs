@@ -45,6 +45,7 @@ namespace RealmStudioX.Core
             {
                 lf.EndInteractive();
                 lf.InvalidateRenderCache();
+
                 _layer.Add(lf);
             }
         }

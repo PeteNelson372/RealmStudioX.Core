@@ -61,7 +61,7 @@ namespace RealmStudioX.Core
             canvas.Scale(scale);
             canvas.Translate(-bmp.Width / 2f, -bmp.Height / 2f);
 
-            canvas.DrawImage(bmp, 0, 0);
+            canvas.DrawImage(bmp, 0, 0, SKSamplingOptions.Default);
         }
 
         private static void DrawSvgThumbnail(SKCanvas canvas, SvgResource svg, int size)
@@ -74,7 +74,7 @@ namespace RealmStudioX.Core
             canvas.Scale(scale);
             canvas.Translate(-bounds.MidX, -bounds.MidY);
 
-            canvas.DrawImage(svg.Image, 0, 0);
+            canvas.DrawImage(svg.Image, 0, 0, SKSamplingOptions.Default);
         }
 
         private static float ComputeScale(SKRect bounds, int size)

@@ -71,18 +71,18 @@ namespace RealmStudioX.Core
                 return _landClipCache;
             }
 
-            _landClipCache?.Dispose();
-            _landClipCache = null;
-
-            _landClipCache = new SKPath();
-
             var landLayer = MapBuilder.GetMapLayerByIndex(Map, MapBuilder.LANDFORMLAYER);
+
+            SKPathBuilder clipPathBuilder = new();
 
             foreach (var lf in landLayer.Shapes.OfType<Landform>())
             {
                 lf.FinalizeShapeGeometry(Map);
-                _landClipCache.AddPath(lf.HitPath);
+                clipPathBuilder.AddPath(lf.HitPath);
             }
+
+            _landClipCache = clipPathBuilder.Snapshot();
+            clipPathBuilder.Detach();
 
             _landClipPathModified = false;
 
@@ -111,17 +111,20 @@ namespace RealmStudioX.Core
             _waterSystemClipCache?.Dispose();
             _waterSystemClipCache = null;
 
-            _waterSystemClipCache = new SKPath();
+            using var _waterSystemClipCacheBuilder = new SKPathBuilder();
 
             foreach (var ws in Map.WaterSystems)
             {
                 foreach (var wb in ws.WaterBodies)
                 {
-                    _waterSystemClipCache.AddPath(wb.HitPath);
+                    _waterSystemClipCacheBuilder.AddPath(wb.HitPath);
                 }
 
-                _waterSystemClipCache.AddPath(ws.MergedGeometry);
+                _waterSystemClipCacheBuilder.AddPath(ws.MergedGeometry);
             }
+
+            _waterSystemClipCache = _waterSystemClipCacheBuilder.Snapshot();
+            _waterSystemClipCacheBuilder.Detach();
 
             _waterSystemClipPathModified = false;
 
@@ -755,7 +758,7 @@ namespace RealmStudioX.Core
 
             for (int i = 0; i < layer.Shapes.Count; i++)
             {
-                if (layer.Shapes[i] is MapLabel ml)
+                if (layer.Shapes[i] != null && layer.Shapes[i] is MapLabel ml)
                 {
                     ml.Render(canvas, fontManager);
                 }
@@ -913,6 +916,7 @@ namespace RealmStudioX.Core
                     {
                         selectedComponent = mp;
                         canvas.DrawRect(mp.Bounds, PaintObjects.MapPathSelectPaint);
+
                         mp.Editor.RenderEditableHandles(canvas, Camera.Zoom);
                     }
                     else if (shape is MapSymbol ms)
@@ -922,12 +926,9 @@ namespace RealmStudioX.Core
                         if (RenderContext.State.CurrentDrawingMode == MapDrawingMode.ShapeSelect)
                         {
                             selectedComponent = ms;
-                            canvas.DrawRect(ms.Bounds, PaintObjects.MapSymbolSelectPaint);
                         }
-                        else
-                        {
-                            canvas.DrawRect(ms.Bounds, PaintObjects.MapSymbolSelectPaint);
-                        }
+
+                        canvas.DrawRect(ms.Bounds, PaintObjects.MapSymbolSelectPaint);
                     }
                     else if (shape is MapLabel ml)
                     {
@@ -935,13 +936,10 @@ namespace RealmStudioX.Core
 
                         if (RenderContext.State.CurrentDrawingMode == MapDrawingMode.ShapeSelect)
                         {
-                            selectedComponent = ml;
-                            canvas.DrawRect(ml.Bounds, PaintObjects.LabelSelectPaint);
+                            selectedComponent = ml;                            
                         }
-                        else
-                        {
-                            canvas.DrawRect(ml.Bounds, PaintObjects.LabelSelectPaint);
-                        }
+
+                        canvas.DrawRect(ml.Bounds, PaintObjects.LabelSelectPaint);
                     }
                     else if (shape is PlacedMapBox pmb)
                     {
