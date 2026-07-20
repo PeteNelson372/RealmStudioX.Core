@@ -42,7 +42,7 @@ namespace RealmStudioX.Core
                 }
                 _renderContext = value ?? throw new ArgumentNullException(nameof(value));
             }
-        }   
+        }
 
         public MapScene(RealmStudioMap map, FontManager fontManager)
         {
@@ -1009,6 +1009,129 @@ namespace RealmStudioX.Core
         /******************************************************************************************************* 
         * MAP SCENE RENDER
         *******************************************************************************************************/
+
+        public List<LayerExportEntry> RenderAsLayers()
+        {
+            List<LayerExportEntry> layerExportEntries = [];
+
+            using SKSurface s = SKSurface.Create(new SKImageInfo(Map.MapWidth, Map.MapHeight));
+            s.Canvas.Clear();
+
+            using (RenderContextScope.Begin(RenderContext))
+            {
+                RenderBackground(s.Canvas);
+                SKImage background = s.Snapshot();
+                layerExportEntries.Add(CreateExportEntry(background, "background.png", MapBuilder.BASELAYER));
+                s.Canvas.Clear();
+
+                RenderOcean(s.Canvas);
+                SKImage ocean = s.Snapshot();
+                layerExportEntries.Add(CreateExportEntry(ocean, "ocean.png", MapBuilder.OCEANTEXTURELAYER));
+                s.Canvas.Clear();
+
+                RenderWindroses(s.Canvas);
+                SKImage windroses = s.Snapshot();
+                layerExportEntries.Add(CreateExportEntry(windroses, "windroses.png", MapBuilder.WINDROSELAYER));
+                s.Canvas.Clear();
+
+                RenderAboveOceanGridLayer(s.Canvas);
+                SKImage aboveOceanGrid = s.Snapshot();
+                layerExportEntries.Add(CreateExportEntry(aboveOceanGrid, "aboveoceangrid.png", MapBuilder.ABOVEOCEANGRIDLAYER));
+                s.Canvas.Clear();
+
+                RenderLandformCoastlines(s.Canvas);
+                SKImage coastlines = s.Snapshot();
+                layerExportEntries.Add(CreateExportEntry(coastlines, "coastlines.png", MapBuilder.LANDCOASTLINELAYER));
+                s.Canvas.Clear();
+
+                RenderLandforms(s.Canvas);
+                SKImage landforms = s.Snapshot();
+                layerExportEntries.Add(CreateExportEntry(landforms, "landforms.png", MapBuilder.LANDFORMLAYER));
+                s.Canvas.Clear();
+
+                RenderWaterSystems(s.Canvas);
+                SKImage waterSystems = s.Snapshot();
+                layerExportEntries.Add(CreateExportEntry(waterSystems, "watersystems.png", MapBuilder.WATERLAYER));
+                s.Canvas.Clear();
+
+                RenderBelowSymbolsGridLayer(s.Canvas);
+                SKImage belowSymbolsGrid = s.Snapshot();
+                layerExportEntries.Add(CreateExportEntry(belowSymbolsGrid, "belowsymbolsgrid.png", MapBuilder.BELOWSYMBOLSGRIDLAYER));
+                s.Canvas.Clear();
+
+                RenderLowerMapPaths(s.Canvas);
+                SKImage lowerMapPaths = s.Snapshot();
+                layerExportEntries.Add(CreateExportEntry(lowerMapPaths, "lowermappaths.png", MapBuilder.PATHLOWERLAYER));
+                s.Canvas.Clear();
+
+                RenderSymbols(s.Canvas);
+                SKImage symbols = s.Snapshot();
+                layerExportEntries.Add(CreateExportEntry(symbols, "symbols.png", MapBuilder.SYMBOLLAYER));
+                s.Canvas.Clear();
+
+                RenderUpperMapPaths(s.Canvas);
+                SKImage upperMapPaths = s.Snapshot();
+                layerExportEntries.Add(CreateExportEntry(upperMapPaths, "uppermappaths.png", MapBuilder.PATHUPPERLAYER));
+                s.Canvas.Clear();
+
+                RenderRegions(s.Canvas);
+                SKImage regions = s.Snapshot();
+                layerExportEntries.Add(CreateExportEntry(regions, "regions.png", MapBuilder.REGIONLAYER));
+                s.Canvas.Clear();
+
+                RenderDefaultGridLayer(s.Canvas);
+                SKImage defaultGrid = s.Snapshot();
+                layerExportEntries.Add(CreateExportEntry(defaultGrid, "defaultgrid.png", MapBuilder.DEFAULTGRIDLAYER));
+                s.Canvas.Clear();
+
+                RenderBoxes(s.Canvas);
+                SKImage boxes = s.Snapshot();
+                layerExportEntries.Add(CreateExportEntry(boxes, "boxes.png", MapBuilder.BOXLAYER));
+                s.Canvas.Clear();
+
+                RenderLabels(s.Canvas, _fontManager!);
+                SKImage labels = s.Snapshot();
+                layerExportEntries.Add(CreateExportEntry(labels, "labels.png", MapBuilder.LABELLAYER));
+                s.Canvas.Clear();
+
+                RenderOverlays(s.Canvas);
+                SKImage overlays = s.Snapshot();
+                layerExportEntries.Add(CreateExportEntry(overlays, "overlays.png", MapBuilder.OVERLAYLAYER));
+                s.Canvas.Clear();
+
+                RenderFrame(s.Canvas);
+                SKImage frame = s.Snapshot();
+                layerExportEntries.Add(CreateExportEntry(frame, "frame.png", MapBuilder.FRAMELAYER));
+                s.Canvas.Clear();
+
+                RenderMeasure(s.Canvas);
+                SKImage measure = s.Snapshot();
+                layerExportEntries.Add(CreateExportEntry(measure, "measure.png", MapBuilder.MEASURELAYER));
+                s.Canvas.Clear();
+
+                RenderDrawingLayer(s.Canvas);
+                SKImage draw = s.Snapshot();
+                layerExportEntries.Add(CreateExportEntry(draw, "drawing.png", MapBuilder.DRAWINGLAYER));
+                s.Canvas.Clear();
+
+                RenderVignette(s.Canvas);
+                SKImage vignette = s.Snapshot();
+                layerExportEntries.Add(CreateExportEntry(vignette, "vignette.png", MapBuilder.VIGNETTELAYER));
+            }
+
+            return layerExportEntries;
+        }
+
+        public LayerExportEntry CreateExportEntry(SKImage image, string layerImageName, int layerIndex)
+        {
+            return new LayerExportEntry()
+            {
+                LayerName = MapBuilder.GetMapLayerByIndex(Map, layerIndex).MapLayerName,
+                LayerImageName = layerImageName,
+                LayerImage = image
+            };
+        }
+
         public void Render(SKCanvas canvas)
         {
             ArgumentNullException.ThrowIfNull(canvas);
@@ -1156,5 +1279,12 @@ namespace RealmStudioX.Core
             Dispose(disposing: true);
             GC.SuppressFinalize(this);
         }
+    }
+
+    public class LayerExportEntry
+    {
+        public string LayerName { get; set; } = string.Empty;
+        public string LayerImageName { get; set; } = string.Empty;
+        public SKImage LayerImage { get; set; } = SKImage.FromBitmap(new SKBitmap());
     }
 }
