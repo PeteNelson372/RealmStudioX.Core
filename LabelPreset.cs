@@ -21,33 +21,71 @@
 * support@brookmonte.com
 *
 ***************************************************************************************************************************/
+using RealmStudioShapeRenderingLib;
+using RealmStudioX.WPF.EditorUtilities;
 using SkiaSharp;
 using System.Xml.Serialization;
 
-namespace RealmStudioX
+namespace RealmStudioX.Core
 {
-    [XmlRoot("LabelPreset", Namespace = "RealmStudio", IsNullable = false)]
+    [XmlRoot("LabelPreset")]
     public class LabelPreset
     {
         [XmlAttribute]
-        public bool IsDefault { get; set; } = false;
-        [XmlElement]
-        public string PresetXmlFilePath { get; set; } = string.Empty;
+        public bool IsSystem { get; set; } = false;
+
         [XmlElement]
         public string LabelPresetName { get; set; } = string.Empty;
-        [XmlElement]
-        public string LabelPresetTheme { get; set; } = string.Empty;
-        [XmlElement]
+        
+        [XmlIgnore]
         public SKColor LabelColor { get; set; } = SKColor.Empty;
-        [XmlElement]
+
+        [XmlElement("LabelColor")]
+        public string LabelColorXml
+        {
+            get => XmlColorConverter.Serialize(LabelColor);
+            set => LabelColor = XmlColorConverter.Deserialize(value);
+        }
+
+        [XmlIgnore]
         public SKColor LabelOutlineColor { get; set; } = SKColor.Empty;
+
+        [XmlElement("LabelOutlineColor")]
+        public string LabelOutlineColorXml
+        {
+            get => XmlColorConverter.Serialize(LabelOutlineColor);
+            set => LabelOutlineColor = XmlColorConverter.Deserialize(value);
+        }
+
         [XmlElement]
         public float LabelOutlineWidth { get; set; } = 0;
-        [XmlElement]
+        
+        [XmlIgnore]
         public SKColor LabelGlowColor { get; set; } = SKColor.Empty;
+
+        [XmlElement("LabelGlowColor")]
+        public string LabelGlowColorXml
+        {
+            get => XmlColorConverter.Serialize(LabelGlowColor);
+            set => LabelGlowColor = XmlColorConverter.Deserialize(value);
+        }
+
         [XmlElement]
         public int LabelGlowStrength { get; set; } = 0;
-        [XmlElement]
-        public string LabelFontString { get; set; } = string.Empty;
+
+        [XmlIgnore]
+        public FontStyleModel LabelFont { get; set; } = new FontStyleModel();
+
+        [XmlElement("LabelFontFamily")]
+        public string LabelFontFamily { get; set; } = "Arial";
+
+        [XmlElement("LabelFontSize")]
+        public float LabelFontSize { get; set; } = 24f;
+
+        [XmlElement("LabelFontBold")]
+        public bool LabelFontBold { get; set; }
+
+        [XmlElement("LabelFontItalic")]
+        public bool LabelFontItalic { get; set; }
     }
 }

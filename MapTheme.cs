@@ -21,56 +21,247 @@
 * support@brookmonte.com
 *
 ***************************************************************************************************************************/
-using System.Xml.Serialization;
 using RealmStudioShapeRenderingLib;
+using RealmStudioX.WPF.EditorUtilities;
+using SkiaSharp;
+using System.Xml.Serialization;
 
 namespace RealmStudioX.Core
 {
-    [XmlRoot("maptheme", Namespace = "RealmStudio", IsNullable = false)]
+    [XmlRoot("RealmStudioXMapTheme")]
     public class MapTheme
     {
-        /*
+        [XmlElement("ThemeName", IsNullable = false)]
         public string ThemeName { get; set; } = string.Empty;
-        public string? ThemePath { get; set; }
-        public bool IsDefaultTheme { get; set; }
-        public bool IsSystemTheme { get; set; }
-        [XmlElement(IsNullable = true)] public MapTexture? BackgroundTexture { get; set; }
-        [XmlElement(IsNullable = true)] public float? BackgroundTextureScale { get; set; } = 1.0F;
-        [XmlElement(IsNullable = true)] public bool? MirrorBackgroundTexture { get; set; } = false;
-        [XmlElement(IsNullable = true)] public MapTexture? OceanTexture { get; set; }
-        [XmlElement(IsNullable = true)] public float? OceanTextureOpacity { get; set; } = 1.0F;
-        [XmlElement(IsNullable = true)] public float? OceanTextureScale { get; set; } = 1.0F;
-        [XmlElement(IsNullable = true)] public bool? MirrorOceanTexture { get; set; } = false;
-        [XmlElement(IsNullable = true)] public int? OceanColor { get; set; } = Color.White.ToArgb();
-        [XmlArray(IsNullable = true)] public List<int?>? OceanColorPalette { get; set; } = [];
-        [XmlElement(IsNullable = true)] public int? LandformOutlineColor { get; set; } = Color.FromArgb(255, 62, 55, 40).ToArgb();
-        [XmlElement(IsNullable = true)] public int? LandformBackgroundColor { get; set; } = Color.White.ToArgb();
-        [XmlElement(IsNullable = true)] public int? LandformOutlineWidth { get; set; } = 2;
-        [XmlElement(IsNullable = true)] public MapTexture? LandformTexture { get; set; }
-        [XmlElement(IsNullable = true)] public bool? FillLandformWithTexture { get; set; } = true;
-        [XmlElement(IsNullable = true)] public string? LandShorelineStyle { get; set; } = string.Empty;
-        [XmlElement(IsNullable = true)] public int? LandformCoastlineColor { get; set; } = ColorTranslator.FromHtml("#BB9CC3B7").ToArgb();
-        [XmlElement(IsNullable = true)] public string? LandformCoastlineStyle { get; set; } = string.Empty;
-        [XmlElement(IsNullable = true)] public int? LandformCoastlineEffectDistance { get; set; } = 12;
-        [XmlArray(IsNullable = true)] public List<int?>? LandformColorPalette { get; set; } = [];
-        [XmlElement(IsNullable = true)] public int? FreshwaterColor { get; set; } = Color.FromArgb(101, 140, 191, 197).ToArgb();
-        [XmlElement(IsNullable = true)] public int? FreshwaterShorelineColor { get; set; } = Color.Empty.ToArgb();
-        [XmlElement(IsNullable = true)] public int? RiverWidth { get; set; } = 4;
-        [XmlElement(IsNullable = true)] public bool? RiverSourceFadeIn { get; set; } = true;
-        [XmlArray(IsNullable = true)] public List<int?>? FreshwaterColorPalette { get; set; } = [];
-        [XmlElement(IsNullable = true)] public int? PathColor { get; set; } = Color.Empty.ToArgb();
-        [XmlElement(IsNullable = true)] public int? PathWidth { get; set; } = 8;
-        [XmlElement(IsNullable = true)] public PathType? PathStyle { get; set; } = PathType.SolidLinePath;
-        [XmlElement(IsNullable = true)] public string? LabelFont { get; set; } = string.Empty;
-        [XmlElement(IsNullable = true)] public int? LabelColor { get; set; } = ColorTranslator.FromHtml("#3D351E").ToArgb();
-        [XmlElement(IsNullable = true)] public int? LabelOutlineColor { get; set; } = ColorTranslator.FromHtml("#A1D6CAAB").ToArgb();
-        [XmlElement(IsNullable = true)] public float? LabelOutlineWidth { get; set; }
-        [XmlElement(IsNullable = true)] public int? LabelGlowColor { get; set; } = Color.White.ToArgb();
-        [XmlElement(IsNullable = true)] public int? LabelGlowStrength { get; set; }
-        [XmlElement(IsNullable = true)] public int? VignetteColor { get; set; } = ColorTranslator.FromHtml("#C9977B").ToArgb();
-        [XmlElement(IsNullable = true)] public int? VignetteStrength { get; set; } = 148;
-        [XmlElement(IsNullable = true)] public VignetteShapeType? VignetteShape { get; set; } = VignetteShapeType.Oval;
-        [XmlArray(IsNullable = true)] public int?[]? SymbolCustomColors { get; set; } = [Color.Empty.ToArgb(), Color.Empty.ToArgb(), Color.Empty.ToArgb(), Color.Empty.ToArgb()];
-        */
+
+        [XmlElement("IsDefaultTheme")]
+        public bool IsDefaultTheme { get; set; } = false;
+
+        [XmlElement("IsSystemTheme")]
+        public bool IsSystemTheme { get; set; } = false;
+
+        [XmlElement("BackgroundTextureId", IsNullable = true)]
+        public string? BackgroundTextureId { get; set; }
+
+        [XmlElement("BackgroundTextureScale")]
+        public float BackgroundTextureScale { get; set; } = 1f;
+
+        [XmlElement("MirrorBackgroundTexture")]
+        public bool MirrorBackgroundTexture { get; set; }
+
+        [XmlElement("OceanTextureId", IsNullable = true)]
+        public string? OceanTextureId { get; set; }
+
+        [XmlElement("OceanTextureScale")]
+        public float OceanTextureScale { get; set; } = 1f;
+
+        [XmlElement("MirrorOceanTexture")]
+        public bool MirrorOceanTexture { get; set; } = false;
+
+        [XmlElement("EnableCoastlineBlur")]
+        public bool EnableCoastlineBlur { get; set; } = true;
+
+        [XmlElement("OceanTextureOpacity")]
+        public float OceanTextureOpacity { get; set; } = 1f;
+
+        [XmlElement("OceanColorOverlayEnabled")]
+        public bool OceanColorOverlayEnabled { get; set; }
+
+        [XmlIgnore]
+        public SKColor OceanOverlayColor { get; set; } = SKColors.Transparent;
+
+        [XmlElement("OceanOverlayColor")]
+        public string OceanOverlayColorXml
+        {
+            get => XmlColorConverter.Serialize(OceanOverlayColor);
+            set => OceanOverlayColor = XmlColorConverter.Deserialize(value);
+        }
+
+        [XmlElement("UseLandformTextureBackground")]
+        public bool UseLandformTextureBackground { get; set; } = true;
+
+        [XmlIgnore]
+        public SKColor LandformBackgroundColor { get; set; } = new(140, 180, 120);
+
+        [XmlElement("LandformBackgroundColor")]
+        public string LandformBackgroundColorXml
+        {
+            get => XmlColorConverter.Serialize(LandformBackgroundColor);
+            set => LandformBackgroundColor = XmlColorConverter.Deserialize(value);
+        }
+
+        [XmlIgnore]
+        public SKColor LandformOutlineColor { get; set; } = new(62, 55, 40);
+
+        [XmlElement("LandformOutlineColor")]
+        public string LandformOutlineColorXml
+        {
+            get => XmlColorConverter.Serialize(LandformOutlineColor);
+            set => LandformOutlineColor = XmlColorConverter.Deserialize(value);
+        }
+
+        [XmlElement("LandformTextureId", IsNullable = true)]
+        public string? LandformTextureId { get; set; }
+
+        [XmlElement("LandformOutlineWidth")]
+        public int LandformOutlineWidth { get; set; } = 2;
+
+        [XmlElement("LandformShadingDepth")]
+        public int LandformShadingDepth { get; set; } = 16;
+
+
+        [XmlElement("CoastlineStyle")]
+        public LandformCoastlineStyle CoastlineStyle { get; set; } = LandformCoastlineStyle.UniformBlend;
+
+        [XmlElement("CoastlineEffectDistance")]
+        public int CoastlineEffectDistance { get; set; } = 120;
+
+        // Base color
+        [XmlIgnore]
+        public SKColor CoastlineColor { get; set; } = SKColor.Parse("#BB9CC3B7");
+
+        [XmlElement("CoastlineColor")]
+        public string CoastlineColorXml
+        {
+            get => XmlColorConverter.Serialize(CoastlineColor);
+            set => CoastlineColor = XmlColorConverter.Deserialize(value);
+        }
+
+        [XmlIgnore]
+        public SKColor ShorelineColor { get; set; } = SKColor.Parse("#A19076");
+
+        [XmlElement("ShorelineColor")]
+        public string ShorelineColorXml
+        {
+            get => XmlColorConverter.Serialize(ShorelineColor);
+            set => ShorelineColor = XmlColorConverter.Deserialize(value);
+        }
+
+        [XmlIgnore]
+        public SKColor DeepWaterColor { get; set; } = new SKColor(120, 180, 220, 255);
+
+        [XmlElement("DeepWaterColor")]
+        public string DeepWaterColorXml
+        {
+            get => XmlColorConverter.Serialize(DeepWaterColor);
+            set => DeepWaterColor = XmlColorConverter.Deserialize(value);
+        }
+
+        [XmlIgnore]
+        public SKColor ShallowWaterColor { get; set; } = new SKColor(30, 80, 140, 255);
+
+        [XmlElement("ShallowWaterColor")]
+        public string ShallowWaterColorXml
+        {
+            get => XmlColorConverter.Serialize(ShallowWaterColor);
+            set => ShallowWaterColor = XmlColorConverter.Deserialize(value);
+        }
+
+        [XmlIgnore]
+        public SKColor PathColor { get; set; } = SKColor.Parse("#4B311A");
+
+        [XmlElement("PathColor")]
+        public string PathColorXml
+        {
+            get => XmlColorConverter.Serialize(PathColor);
+            set => PathColor = XmlColorConverter.Deserialize(value);
+        }
+
+        [XmlIgnore]
+        public FontStyleModel LabelFont { get; set; } = new FontStyleModel();
+
+        [XmlElement("LabelFontFamily")]
+        public string LabelFontFamily { get; set; } = "Arial";
+
+        [XmlElement("LabelFontSize")]
+        public float LabelFontSize { get; set; } = 24f;
+
+        [XmlElement("LabelFontBold")]
+        public bool LabelFontBold { get; set; }
+
+        [XmlElement("LabelFontItalic")]
+        public bool LabelFontItalic { get; set; }
+
+        [XmlIgnore]
+        public SKColor LabelColor { get; set; } = SKColor.Parse("#3D351E");
+
+        [XmlElement("LabelColor")]
+        public string LabelColorXml
+        {
+            get => XmlColorConverter.Serialize(LabelColor);
+            set => LabelColor = XmlColorConverter.Deserialize(value);
+        }
+
+        [XmlIgnore]
+        public SKColor LabelOutlineColor { get; set; } = SKColor.Parse("#A1D6CAAB");
+
+        [XmlElement("LabelOutlineColor")]
+        public string LabelOutlineColorXml
+        {
+            get => XmlColorConverter.Serialize(LabelOutlineColor);
+            set => LabelOutlineColor = XmlColorConverter.Deserialize(value);
+        }
+
+        [XmlElement("LabelOutlineWidth")]
+        public float? LabelOutlineWidth { get; set; }
+        
+        [XmlIgnore]
+        public SKColor LabelGlowColor { get; set; } = SKColors.White;
+
+        [XmlElement("LabelGlowColor")]
+        public string LabelGlowColorXml
+        {
+            get => XmlColorConverter.Serialize(LabelGlowColor);
+            set => LabelGlowColor = XmlColorConverter.Deserialize(value);
+        }
+
+        [XmlElement("LabelGlowStrength")]
+        public int LabelGlowStrength { get; set; }
+
+        [XmlIgnore]
+        public SKColor VignetteColor { get; set; } = SKColor.Parse("#C9977B");
+
+        [XmlElement("VignetteColor")]
+        public string VignetteColorXml
+        {
+            get => XmlColorConverter.Serialize(VignetteColor);
+            set => VignetteColor = XmlColorConverter.Deserialize(value);
+        }
+
+        [XmlElement("VignetteStrength")]
+        public int VignetteStrength { get; set; } = 148;
+        
+        [XmlElement("VignetteShape")]
+        public VignetteShapeType VignetteShape { get; set; } = VignetteShapeType.Oval;
+
+        [XmlIgnore]
+        public SKColor[] CustomSymbolColors { get; set; } = new SKColor[3];
+
+        [XmlArray("CustomSymbolColors")]
+        [XmlArrayItem("SymbolColor")]
+        public string[] CustomSymbolColorsXml
+        {
+            get => [.. CustomSymbolColors.Select(XmlColorConverter.Serialize)];
+
+            set
+            {
+                if (value == null)
+                {
+                    CustomSymbolColors = [];
+                    return;
+                }
+
+                CustomSymbolColors = [.. value.Select(XmlColorConverter.Deserialize)];
+            }
+        }
+
+        [XmlArray("LabelPresets")]
+        [XmlArrayItem("LabelPreset")]
+        private List<LabelPreset> _labelPresets = [];
+        public List<LabelPreset> LabelPresets
+        {
+            get { return _labelPresets; }
+            set { _labelPresets.AddRange(value); }
+        }
     }
 }
