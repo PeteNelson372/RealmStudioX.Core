@@ -2,13 +2,13 @@
 
 namespace RealmStudioX.Core
 {
-    public class Cmd_RemoveMapShapes(MapScene scene, List<ISelectable> shapesToRemove) : IUndoableCommand
+    public class Cmd_RemoveMapShapes(MapScene scene, List<ShapeReference> shapesToRemove) : IUndoableCommand
     {
         private readonly MapScene? currentScene = scene;
         private readonly RealmStudioMap currentMap = scene.Map;
-        private readonly List<ISelectable> _shapesToRemove = [..shapesToRemove];
+        private readonly List<ShapeReference> _shapesToRemove = [..shapesToRemove];
 
-        private readonly HashSet<RemovedShapeReference> _removedShapes = [];
+        private readonly HashSet<ShapeReference> _removedShapes = [];
 
         private bool disposedValue;
 
@@ -18,25 +18,25 @@ namespace RealmStudioX.Core
             {
                 _removedShapes.Clear();
 
-                foreach (var shape in _shapesToRemove)
+                foreach (var sr in _shapesToRemove)
                 {
                     foreach (MapLayer layer in currentMap.MapLayers)
                     {
                         for (int i = layer.Shapes.Count - 1; i >= 0; i--)
                         {
-                            MapComponent2D layerShape = layer.Shapes[i];
+                            ISelectable layerShape = layer.Shapes[i];
 
-                            if (layerShape.Id == shape.Id)
+                            if (layerShape is MapComponent2D && layerShape.Id == sr.ReferencedShape?.Id)
                             {
-                                var shapeReference = new RemovedShapeReference()
+                                var shapeReference = new ShapeReference()
                                 {
-                                    shapeLayer = layer,
-                                    removedShape = layerShape
+                                    ShapeLayer = layer,
+                                    ReferencedShape = layerShape
                                 };
 
                                 _removedShapes.Add(shapeReference);
 
-                                layer.Remove(layerShape);
+                                layer.Remove((MapComponent2D)layerShape);
                             }
                         }
 
@@ -52,13 +52,13 @@ namespace RealmStudioX.Core
             {
                 foreach (MapLayer layer in currentMap.MapLayers)
                 {
-                    foreach (RemovedShapeReference shapeReference in _removedShapes)
+                    foreach (ShapeReference shapeReference in _removedShapes)
                     {
-                        if (shapeReference.shapeLayer != null
-                            && layer.MapLayerId == shapeReference.shapeLayer.MapLayerId
-                            && shapeReference.removedShape != null)
+                        if (shapeReference.ShapeLayer != null
+                            && layer.MapLayerId == shapeReference.ShapeLayer.MapLayerId
+                            && shapeReference.ReferencedShape != null)
                         {
-                            shapeReference.shapeLayer.Add(shapeReference.removedShape);
+                            shapeReference.ShapeLayer.Add((MapComponent2D)shapeReference.ReferencedShape);
                         }
                     }
 
@@ -95,11 +95,5 @@ namespace RealmStudioX.Core
             Dispose(disposing: true);
             GC.SuppressFinalize(this);
         }
-    }
-
-    public class RemovedShapeReference
-    {
-        public MapLayer? shapeLayer { get; set; }
-        public MapComponent2D? removedShape { get; set; }
     }
 }
