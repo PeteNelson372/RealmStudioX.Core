@@ -26,6 +26,17 @@ namespace RealmStudioX.Core
             return bmp;
         }
 
+        public void Clear()
+        {
+            foreach (var bmp in _cache.Values)
+            {
+                bmp.Dispose();
+            }
+
+            _imageCache.Clear();
+            _cache.Clear();
+        }
+
         private SKBitmap GenerateThumbnail(MapSymbolDefinition def, int size)
         {
             var bitmap = new SKBitmap(size, size);

@@ -14,6 +14,16 @@ namespace RealmStudioX.Core
         private readonly Dictionary<MapSymbolDefinition, string> _normalizedNames = [];
         private readonly Dictionary<MapSymbolDefinition, List<string>> _normalizedTags = [];
 
+        public void Clear()
+        {
+            _all.Clear();
+            _byType.Clear();
+            _byCollection.Clear();
+            _byTag.Clear();
+            _normalizedNames.Clear();
+            _normalizedTags.Clear();
+        }
+
         // -------------------------------------------------
         // Add symbol
         // -------------------------------------------------
