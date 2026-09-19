@@ -28,6 +28,8 @@ namespace RealmStudioX.Core
 
         private FontManager? _fontManager;
 
+        private SKBitmap? _heightMapOverlayBitmap;
+
         private readonly TransformWidget _transformWidget = new();
         public TransformWidget TransformWidget => _transformWidget;
 
@@ -583,7 +585,7 @@ namespace RealmStudioX.Core
             }
 
             // process and render DrawnMapComponents
-            layer.ProcessPlacementQueue();
+            //layer.ProcessPlacementQueue();
             layer.Draw(canvas, Camera.Viewport);
 
             // render the land drawing layer
@@ -1140,10 +1142,10 @@ namespace RealmStudioX.Core
             canvas.Clear(SKColors.White);
 
             using (RenderContextScope.Begin(RenderContext))
-            {
+            {          
                 RenderBackground(canvas);
-
-                RenderOcean(canvas);
+                
+                RenderOcean(canvas);                
 
                 RenderOceanShorelineBlend(canvas);
 
@@ -1195,6 +1197,7 @@ namespace RealmStudioX.Core
 
                 RenderWaterSystemSelection(canvas);
             }
+
         }
 
         public void RenderForExport(SKCanvas canvas)
@@ -1250,6 +1253,54 @@ namespace RealmStudioX.Core
             }
         }
 
+        public void RenderHeightMapOverlay(SKCanvas canvas)
+        {
+            ArgumentNullException.ThrowIfNull(canvas);
+            ArgumentNullException.ThrowIfNull(RenderContext);
+
+            if (_heightMapOverlayBitmap == null || _heightMapOverlayBitmap.IsEmpty)
+            {
+                return;
+            }
+
+            using SKPaint paint = new()
+            {
+                Color = SKColors.White.WithAlpha(128)
+            };
+
+            canvas.DrawBitmap(_heightMapOverlayBitmap, new SKPoint(0, 0), SKSamplingOptions.Default, paint);
+        }
+
+        public void BuildHeightMapOverlay()
+        {
+            _heightMapOverlayBitmap?.Dispose();
+
+            _heightMapOverlayBitmap = new SKBitmap(
+                new SKImageInfo(
+                    Map.MapWidth,
+                    Map.MapHeight,
+                    SKColorType.Rgba8888,
+                    SKAlphaType.Premul));
+
+            using SKCanvas canvas = new(_heightMapOverlayBitmap);
+
+            canvas.Clear(SKColors.Transparent);
+
+            using (RenderContextScope.Begin(RenderContext))
+            {
+                RenderWaterSystems(canvas);
+                RenderLowerMapPaths(canvas);
+                RenderUpperMapPaths(canvas);
+
+                // RenderHeightMapSymbols(canvas);
+            }
+        }
+
+        public void ClearHeightMapOverlay()
+        {
+            _heightMapOverlayBitmap?.Dispose();
+            _heightMapOverlayBitmap = null;
+        }
 
         private void Dispose(bool disposing)
         {
