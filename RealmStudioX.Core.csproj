@@ -7,14 +7,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="SkiaSharp" Version="4.152.0" />
-    <PackageReference Include="SkiaSharp.Views" Version="4.152.0" />
+    <PackageReference Include="SkiaSharp" Version="4.152.1" />
+    <PackageReference Include="SkiaSharp.Views" Version="4.152.1" />
   </ItemGroup>
 
   <ItemGroup>
-    <Reference Include="RealmStudioShapeRenderingLib">
-      <HintPath>..\RealmStudioShapeRenderingLib\bin\Debug\net8.0\RealmStudioShapeRenderingLib.dll</HintPath>
-    </Reference>
+    <ProjectReference Include="..\RealmStudioShapeRenderingLib\RealmStudioShapeRenderingLib.csproj" />
   </ItemGroup>
 
 </Project>
