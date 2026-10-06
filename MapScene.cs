@@ -873,6 +873,24 @@ namespace RealmStudioX.Core
             layer.Draw(canvas, Camera.Viewport);
         }
 
+        public void RenderWorklayer(SKCanvas canvas)
+        {
+            MapLayer layer = MapBuilder.GetMapLayerByIndex(Map, MapBuilder.WORKLAYER);
+
+            for (int i = 0; i < layer.Shapes.Count; i++)
+            {
+                if (layer.Shapes[i] is ImportRegion ir)
+                {
+                    ir.Render(canvas, null, null);
+                }
+
+                if (layer.Shapes[i] is ImportLandform il)
+                {
+                    il.Render(canvas, null, null);
+                }
+            }
+        }
+
         /******************************************************************************************************* 
         * OTHER SHAPE RENDERING (will be divided as features as added)
         *******************************************************************************************************/
