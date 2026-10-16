@@ -883,11 +883,6 @@ namespace RealmStudioX.Core
                 {
                     ir.Render(canvas, null, null);
                 }
-
-                if (layer.Shapes[i] is ImportLandform il)
-                {
-                    il.Render(canvas, null, null);
-                }
             }
         }
 
