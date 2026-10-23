@@ -1266,6 +1266,39 @@ namespace RealmStudioX.Core
             }
         }
 
+        public void RenderFor3DGlobeView(SKCanvas canvas)
+        {
+            ArgumentNullException.ThrowIfNull(canvas);
+            ArgumentNullException.ThrowIfNull(RenderContext);
+
+            canvas.Clear(SKColors.White);
+
+            using (RenderContextScope.Begin(RenderContext))
+            {
+                RenderBackground(canvas);
+
+                RenderOcean(canvas);
+
+                RenderOceanShorelineBlend(canvas);
+
+                RenderLandformCoastlines(canvas);
+
+                RenderLandforms(canvas);
+
+                RenderWaterSystems(canvas);
+
+                RenderBelowSymbolsGridLayer(canvas);
+
+                RenderLowerMapPaths(canvas);
+
+                RenderSymbols(canvas);
+
+                RenderUpperMapPaths(canvas);
+
+                RenderDefaultGridLayer(canvas);
+            }
+        }
+
         public void RenderHeightMapOverlay(SKCanvas canvas)
         {
             ArgumentNullException.ThrowIfNull(canvas);
