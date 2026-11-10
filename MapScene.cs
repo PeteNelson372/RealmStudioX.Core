@@ -57,6 +57,18 @@ namespace RealmStudioX.Core
             _fontManager = fontManager ?? throw new ArgumentNullException(nameof(fontManager));
         }
 
+        public MapScene(RealmStudioMap map)
+        {
+            // this constructor exists just for rendering the map
+            // for use as a texture in the world globe viewer. It is not used for interactive map editing.
+            Map = map ?? throw new ArgumentNullException(nameof(map));
+            Map.Validate();
+
+            // Camera is constructed just to satisfy the MapScene constructor;
+            // it is not used at all
+            Camera = new Camera2D();
+        }
+
         public SKRect WorldBounds => new(0, 0, Map.MapWidth, Map.MapHeight);
 
         /******************************************************************************************************* 
