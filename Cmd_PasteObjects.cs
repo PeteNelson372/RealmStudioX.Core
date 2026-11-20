@@ -233,13 +233,13 @@ namespace RealmStudioX.Core
 
         private static void Serializer_UnknownNode(object? sender, XmlNodeEventArgs e)
         {
-            Debug.WriteLine("Exception on Load. Unknown Node: " + e.Name + "\t" + e.Text);
+            // ignore unknown nodes during deserialization
         }
 
         private static void Serializer_UnknownAttribute(object? sender, XmlAttributeEventArgs e)
         {
             System.Xml.XmlAttribute attr = e.Attr;
-            Debug.WriteLine("Exception on Load. Unknown Attribute: " + attr.Name + "\t" + attr.Value);
+            // ignore unknown attributes during deserialization
         }
 
         private void Dispose(bool disposing)
