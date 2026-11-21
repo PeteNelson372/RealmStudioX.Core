@@ -1,12 +1,16 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net11.0</TargetFramework>
+    <TargetFramework>net11.0-windows</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <UseWPF>true</UseWPF>
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="HelixToolkit" Version="3.1.2" />
+    <PackageReference Include="HelixToolkit.Wpf" Version="3.1.2" />
+    <PackageReference Include="HelixToolkit.Wpf.SharpDX" Version="3.1.2" />
     <PackageReference Include="SkiaSharp" Version="4.156.1" />
     <PackageReference Include="SkiaSharp.Views" Version="4.156.1" />
   </ItemGroup>
