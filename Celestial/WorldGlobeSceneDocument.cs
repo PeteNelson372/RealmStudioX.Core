@@ -8,7 +8,7 @@ public sealed class WorldGlobeSceneDocument
 
     public string Description { get; set; } = string.Empty;
 
-    public CelestialSystem CelestialSystem { get; set; } = new();
+    //public CelestialSystem CelestialSystem { get; set; } = new();
 
     public WorldGlobeSceneSettings WorldGlobe { get; set; } = new();
 
