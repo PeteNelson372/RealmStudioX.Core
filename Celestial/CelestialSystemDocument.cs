@@ -1,6 +1,12 @@
-﻿using System.Collections.Generic;
+﻿namespace RealmStudioX.Core.Celestial;
 
-namespace RealmStudioX.Core.Celestial.Serialization;
+/// <summary>
+/// Represents a celestial system containing its identity, display information, animation setting, and
+/// celestial bodies. This class is used for serialization/deserialization of the celestial system
+/// to an XML file.
+/// </summary>
+/// <remarks>The default instance has a generated identifier, a default name, an empty description, animation
+/// enabled, and an empty collection of celestial bodies.</remarks>
 
 public sealed class CelestialSystemDocument
 {
@@ -173,6 +179,133 @@ public sealed class CelestialBodyAnimationDocument
     // RingTurbulenceSettings
     public double Intensity { get; set; } = 0.2;
     public double UpdateRate { get; set; } = 30.0;
+
+    // BasicRotationSettings
+    public bool ShouldSerializeRotationRate() =>
+        SettingsType == nameof(BasicRotationSettings);
+
+    public bool ShouldSerializeRotationDirection() =>
+        SettingsType == nameof(BasicRotationSettings);
+
+
+    // SunAnimationSettings / CoronaAnimationSettings
+    public bool ShouldSerializeEnableProminences() =>
+        IsSolarActivitySettings();
+
+    public bool ShouldSerializeEnableFlares() =>
+        IsSolarActivitySettings();
+
+    public bool ShouldSerializeActivityIntensity() =>
+        IsSolarActivitySettings();
+
+    public bool ShouldSerializeActivityFrequency() =>
+        IsSolarActivitySettings();
+
+    public bool ShouldSerializeActivityGeometryScale() =>
+        IsSolarActivitySettings();
+
+    public bool ShouldSerializeActivityThicknessScale() =>
+        IsSolarActivitySettings();
+
+
+    // SunAnimationSettings only
+    public bool ShouldSerializeEnableCorona() =>
+        SettingsType == nameof(SunAnimationSettings);
+
+    public bool ShouldSerializeCoronaOpacity() =>
+        SettingsType == nameof(SunAnimationSettings);
+
+    public bool ShouldSerializeCoronaRotationSpeed() =>
+        SettingsType == nameof(SunAnimationSettings);
+
+
+    // BlackHoleAnimationSettings
+    public bool ShouldSerializeEnableJets() =>
+        SettingsType == nameof(BlackHoleAnimationSettings);
+
+    public bool ShouldSerializeJetLength() =>
+        SettingsType == nameof(BlackHoleAnimationSettings);
+
+    public bool ShouldSerializeJetPulseRate() =>
+        SettingsType == nameof(BlackHoleAnimationSettings);
+
+    public bool ShouldSerializeEnableJetParticles() =>
+        SettingsType == nameof(BlackHoleAnimationSettings);
+
+    public bool ShouldSerializeJetParticleSpeed() =>
+        SettingsType == nameof(BlackHoleAnimationSettings);
+
+    public bool ShouldSerializeJetParticleEmissionRate() =>
+        SettingsType == nameof(BlackHoleAnimationSettings);
+
+    public bool ShouldSerializeJetParticleLifetime() =>
+        SettingsType == nameof(BlackHoleAnimationSettings);
+
+    public bool ShouldSerializeJetParticleDispersion() =>
+        SettingsType == nameof(BlackHoleAnimationSettings);
+
+    public bool ShouldSerializeEnableDiskParticles() =>
+        SettingsType == nameof(BlackHoleAnimationSettings);
+
+    public bool ShouldSerializeDiskParticleEmissionRate() =>
+        SettingsType == nameof(BlackHoleAnimationSettings);
+
+    public bool ShouldSerializeDiskParticleLifetime() =>
+        SettingsType == nameof(BlackHoleAnimationSettings);
+
+    public bool ShouldSerializeDiskParticleOutflowSpeed() =>
+        SettingsType == nameof(BlackHoleAnimationSettings);
+
+
+    // NebulaAnimationSettings
+    public bool ShouldSerializeLayerCount() =>
+        SettingsType == nameof(NebulaAnimationSettings);
+
+    public bool ShouldSerializeWidth() =>
+        SettingsType == nameof(NebulaAnimationSettings);
+
+    public bool ShouldSerializeHeight() =>
+        SettingsType == nameof(NebulaAnimationSettings);
+
+    public bool ShouldSerializeDepth() =>
+        SettingsType == nameof(NebulaAnimationSettings);
+
+    public bool ShouldSerializeOpacity() =>
+        SettingsType == nameof(NebulaAnimationSettings);
+
+    public bool ShouldSerializeBrightness() =>
+        SettingsType == nameof(NebulaAnimationSettings);
+
+    public bool ShouldSerializeDetailIntensity() =>
+        SettingsType == nameof(NebulaAnimationSettings);
+
+    public bool ShouldSerializeRotationSpeed() =>
+        SettingsType == nameof(NebulaAnimationSettings);
+
+    public bool ShouldSerializeDriftSpeed() =>
+        SettingsType == nameof(NebulaAnimationSettings);
+
+
+    // GasGiantAnimationSettings
+    public bool ShouldSerializeEnableAtmosphericTurbulence() =>
+        SettingsType == nameof(GasGiantAnimationSettings);
+
+    public bool ShouldSerializeTurbulenceIntensity() =>
+        SettingsType == nameof(GasGiantAnimationSettings);
+
+
+    // RingTurbulenceSettings
+    public bool ShouldSerializeIntensity() =>
+        SettingsType == nameof(RingTurbulenceSettings);
+
+    public bool ShouldSerializeUpdateRate() =>
+        SettingsType == nameof(RingTurbulenceSettings);
+
+
+    // Helper
+    private bool IsSolarActivitySettings() =>
+        SettingsType == nameof(SunAnimationSettings) ||
+        SettingsType == nameof(CoronaAnimationSettings);
 }
 
 public sealed class CelestialBodyAttachmentDocument
@@ -197,4 +330,19 @@ public sealed class CelestialBodyAttachmentDocument
     public double Inclination { get; set; } = 2.0;
 
     public List<CelestialBodyAnimationDocument> Animations { get; set; } = [];
+
+    public bool ShouldSerializeRingEnabled() =>
+        SettingsType == nameof(PlanetaryRingSettings);
+
+    public bool ShouldSerializeRingTexturePath() =>
+        SettingsType == nameof(PlanetaryRingSettings);
+
+    public bool ShouldSerializeInnerRadiusScale() =>
+        SettingsType == nameof(PlanetaryRingSettings);
+
+    public bool ShouldSerializeOuterRadiusScale() =>
+        SettingsType == nameof(PlanetaryRingSettings);
+
+    public bool ShouldSerializeInclination() =>
+        SettingsType == nameof(PlanetaryRingSettings);
 }
