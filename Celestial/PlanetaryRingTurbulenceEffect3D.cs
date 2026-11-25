@@ -9,11 +9,6 @@ namespace RealmStudioX.Core.Celestial
         private const int TextureWidth = 512;
         private const int TextureHeight = 256;
 
-        private const double MinimumUpdateRate = 1.0;
-        private const double MaximumUpdateRate = 120.0;
-
-        private double _updateRate = 30.0;
-
         private double _textureUpdateInterval = 1.0 / 30.0;
 
         private readonly WriteableBitmap _texture;
